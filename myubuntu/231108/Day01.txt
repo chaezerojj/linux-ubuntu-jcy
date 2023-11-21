@@ -1,0 +1,79 @@
+ls -l /
+명령어 [옵션][인자]
+ls [-l][/]
+
+mkdir은 인자값이 필수
+인자값은 명령어에 따라 필수일 수도 있다.
+
+cd test
+ls -l
+echo testaaa > aaa.txt
+ls
+cat aaa.txt : 인자 필수
+date : 현재 날짜와 시간 출력
+clear : 화면 정리
+man clear : clear 명령어에 대한 사용법 출력
+ q 누르면 man에서 나갈 수 있음
+
+passwd: 비밀번호 변경하기 (비밀번호는 입력할때 화면에 안뜸)
+ctrl + w > 단어 단위로 지워지는 단축키
+ctrl + u > 문장 단위로 지우기
+backspace > 한개씩 지우기
+
+linux
+>> 1. 명령어 하나당 하나의 일만 함 (simple is best)
+- ls는 현재 위치에 있는 파일만 보여주고, passwd는 비밀번호만 변경할 수 있는 기능
+
+>> 2. 여러개 기능을 하려면
+'파이프라인' ex. echo testaaa > aaa.txt
+
+echo: 인자를 화면에 출력
+echo testaaa
+testaaa
+
+>> 3. 각 프로그램은 필터를 만들어야 함(명령어에 필터 기능이 있어야 함)
+
+echo testbbb > bbb.txt
+ls
+aaa.txt bbb.txt
+0
+ls | grep aaa.txt (grep이 필터 역할을 함)
+aaa.txt(만 출력됨)
+
+>> 4. 모든 것은 파일이다.
+리눅스 시스템은 폴더도 파일로 똑같이 인식
+대부분의 명령어가 폴더에도 인식됨
+(일반적인 방법으로도 명령어 입력 가능,)
+
+cd : 경로 이동
+cd .. : 상위 경로로 이동
+cd ~ : 현재사용자 홈 디렉토리로 이동
+cd / : 가장 상위경로로 이동
+cd test : test 폴더로 이동 (상대경로로 이동)
+
+No such file of directory >> 
+절대경로 / 상대경로
+
+pwd : 현재 절대경로로 출력
+
+스크립트(script) : 대본
+- 파일에 어떤 일을 할지 정의하는것
+
+/usr/a에 스크립트 파일 존재
+: /usr/b 폴더에 bbb.txt 파일을 생성
+echo bbb > bbb.txt
+>> /usr/a 폴더에 bbb.txt 파일이 생성됨
+
+echo bbb > /usr/bbb.txt (절대경로로 b폴더에 bbb.txt 파일 생성)
+../b/bbb.txt (상대경로로 파일 생성)
+1. a폴더의 상위 폴더로 이동
+2. b폴더로 이동해서
+3. bbb.txt 파일을 생성
+
+절대경로로 파일을 생성하면 생기는 문제
+- 절대경로는 
+  /usr/a 
+  /usr/b
+
+스크립트 내용
+echo bbb > /usr/bbb.txt

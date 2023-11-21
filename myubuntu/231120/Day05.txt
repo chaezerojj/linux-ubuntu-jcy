@@ -1,0 +1,163 @@
+지난주 수업
+>> 텍스트 편집기 - vi
+ 패키지 매니저 - apt
+
+++ apt - 우분투 패키지 매니저
+centOS에서 jdk를 다운받아야 한다 > 
+
+apt list --installed > 설치된것만 보여줌
+apt remove
+
+구글에 이름-패키지매니저 검색하면 다 나옴
+중요한 것은 패키지 매니저가 무엇인지, 무엇을 할 수 있는지 알아야 함
+
+*패키지 매니저 기능
+- 프로그램 설치
+- 프로그램 삭제
+- 프로그램 검색
+- 프로그램 리스트 불러오기
+
+apt-cache 
+- : 네트워크에 연결하지 않아도 할 수 있음(패키지 데이터베이스 관련 명령어)
+- 리스트(메뉴판)검색
+apt-get 
+- : 다운로드와 같은 역할(패키지 매니징 관련 명령어)
+- apt-cache >> apt-get 설치
+
+~~~~~~~~~~~~~~~~~~~~~
+1. net-tools 설치하기
+>> sudo apt-get install net-tools
+
+2. 내 ip 프롬프트에 출력하기(net-tools 기능 중 하나임)
+>> curl ipinfo.io/ip
+>> ifconfig
+
+3. net-tools 삭제하기 (설정파일도 같이 삭제(명령어 옵션에 있음))
+>> apt-get remove --purge net-tools (root면 앞에 sudo 입력)
+
+~~~~~~~~~~~~~~~~~~~~
+1. 메뉴판 업데이트
+2. 메뉴판에서 패키지 찾기
+2. 패키지 다운받기 
+(apt download 설치 X)
+4. 패키지 설치
+
+1. net-tools 다운로드만 받고
+>> apt-get download net-tools
+2. 다운받은 파일로 설치하기
+>> dpkg -i net-tools[tab키 누르면 뒤에 파일이름 자동완성됨]
+3. 설치 삭제
+>> apt-get remove 
+    .deb 파일은 삭제 안됨
+    (설치 삭제는 dpkg로 안됨 apt-get remove로 해야)
+
+-----------------------------------------------------------------
+아카이브와 압축의 차이
+** zip
+a b c d 폴더 파일들이 잇다
+그러면 dev.zip 압축 O (파일 크기가 줄었다.)
+
+** akive
+a b c d 파일들을
+dev.tar 압축 X (파일 크기 그대로임)
+만약에 dev.tar에 깜박하고 e 파일을 안넣음
+>> e 파일을 dev.tar에 추가할 수 있음
+
+~~~~~~
+
+1. 홈 디렉터리에 tar-test 라는 디렉터리 생성
+>> mkdir tar-test
+2. tar-test 디렉터리 안에 a b c d 파일들 생성하기.
+>> tar-test 안에서
+   touch a
+   touch b
+   touch c
+   touch d
+3. 홈 디렉터리에 tar-test.tar 파일 생성해보기
+>> 홈 디렉터리에서
+   tar -cvf [파일명.tar] [압축할 폴더명]
+   tar -cvf tar-test.tar tar-test
+
+4. tar-test 디렉터리 안에 e 라는 파일 생성하기
+>> cd tar-test
+>> touch e
+
+5. tar-test.tar에 e 파일을 추가하기
+
+6. tar-test.tar 삭제하기
+>> rm tar-test.tar
+7. tar-test.tar 파일을 생성하면서 동시에 압축 수행하기
+  (tar-test.tar.gz)
+>> tar -cvzf tar-test.tar.gz tar-test/
+8. 해당 파일 압축 풀기
+>> gzip -d tar-test.tar.gz
+
+** 빠뜨린 파일 추가하는 2가지 방법
+1. 아카이브 업데이트
+  (폴더 내부에 파일 비교 후 없는 파일 자동 추가)
+  >> tar -uvf tar-test.tar tar-test
+2. 아카이브에 파일 추가
+   (사용자가 파일 직접 추가)
+
+
+유저 생성 / 유저 정보 수정
+
+유저 정보는 리눅스 어느 파일에 저장되어 있을까?
+사용자용 유저 : ubuntu
+최고 관리자 유저 : root
+>> less /etc/passwd
+
+유저명:x:0:0:root:/root:/bin/bash
+유저명:x:UID:GID:설명:/홈디렉터리:/로그인쉘/bash
+
+UID : 유저의 PK
+GID : 그룹의 PK
+
+쉘 프롬프트
+/bin/bash
+UID 값 할당은 0~999번은 시스템 사용자
+1000~9999
+
+chown root:root
+chown 소유자:그룹
+(user1 user2 user3) 관리자 그룹
+
+id(PK primary Key >> 1부터 자동생성됨)
+username (유니크함)
+password
+email or nickname (중복 가능)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+password 저장 파일
+/etc/shadow
+
+less 나가기 키 : q
+
+유저명:비밀번호:최종변경일:다시 변경 설정 가능 기간(횟수):암호만료일:만료전 경고하는 날짜::::
+인코딩(복호화)
+
+1234 -> 복호화 > abcd
+1234 -> 복호화 > abcd
+
+레인보우 테이블
+
+솔트(소금) -> 현재 시간
+useradd (유저 생성 명령어)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. 명령어를 사용해서 user1 생성
+>> useradd user1
+   > less /etc/passwd로 만들어졌는지 확인하기
+2. UID가 2000인 user2 생성하기
+>> useradd -u 2000 user2
+3. 홈 디렉터리에 /home/test-user에 속한 user3 생성하기
+>> sudo useradd -d /home/test-user/ user3
+4. user1과 같은 그룹에 속한 user4 생성하기
+>> useradd -g [그룹아이디] user4
+5. /etc/passwd로 조건에 맞게 유저가 생성되었는지 확인하기
+
+
+/etc/skel 디렉터리의 용도
+-> 사용자 유저의 홈 디렉터리에 공통적으로 들어가야 할 파일을 만들어 놓은 디렉터리
+  새로운 홈 디렉터리가 생성되면 /etc/skel의 파일들이 복제되어 기본 세팅되어 있음
