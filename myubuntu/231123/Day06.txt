@@ -1,0 +1,143 @@
+<231122 linux ubuntu day06>
+
+유저생성 : useradd
+
+1. user1, user2, user3, user4 삭제하기
+>> userdel -rf user1
+>> userdel -rf user2
+>> userdel -rf user3
+>> userdel -rf user4
+
+2. user1을 UID 2000, GID 2000 /home/test-user를 디렉터리로 하는 유저 생성하기
+>> sudo useradd -d /home/test-user user1
+>> sudo usermod -u 2000 user1
+>> sudo groupmod -g 2000 user1
+
+3. user1의 패스워드 변경하기
+  패스워드는 1234
+>> sudo passwd user1
+>> 패스워드 입력
+
+4. user1의 설명을 testuser로 변경하기
+>> sudo usermod -c testuser user1
+
+5. 2500번 그룹 생성(그룹명 : user으로 수정)
+>> sudo groupmod -n user user1
+>> sudo groupadd -g 2500 user1
+
+6. user1의 GID를 2500으로 수정
+>> sudo usermod -g 2500 user1
+
+ubuntu:x:1000:
+그룹이름:x:GID:그룹멤버
+(버전이 다를 경우 안될 수도 있음)
+
+~~~~~~~~~
+유저생성 : useradd
+유저변경 : usermod
+유저삭제 : userdel
+
+그룹생성 : groupadd
+그룹변경 : groupmod
+그룹삭제 : groupdel
+
+관리자 권한 실행은 root 계정만 할 수 있다.
+설치할 때 처음 생성한 유저는 sudo 권한을 줌.
+
+내가 user1을 사용하는 사용자일 때 sudo는 기본적으로 사용 불가
+하지만 useradd 앞에 붙은 sudo는 사용할 수 있도록 하고 싶을 때 (user1은 사용자생성 기능을 사용할 수 있음)
+
+1. user1이 sudo명령어를 useradd에만 사용할 수 있도록 해보세요.
+2. usermod, userdel 명령어도 sudo로 사용할 수 있도록 해보세요.
+3. 비밀번호를 치지 않고도 sudo 사용할 수 있게 수정해보세요.
+
+패스워드 만료기간 관련
+chage 명령어
+chage -l <유저명> : 패스워드 에이징 확인
+
+APT로 패키지 설치
+-미국에 있는 리파지토리에서 리스트를 받아와서 패키지를 설치
+-> 공식 리파지토리에 있는 패키지만 다운로드 가능, 
+  내가 프로젝트를 실행하는데 A라는 프로그램이 필요함. 근데 A가 리파지토이레 등록이 되어있지 않은 상황 + A.deb파일도 없음
+
+PPA(Personal Package Archive)
+
+tomcat8
+
+apache/tomcat8
+apache
+
+web server / was server
+             web application server
+web server : 정적 (apache, nginx)
+was sever : 동적 (tomcat)
+
+예.
+abcd.com/index
+>A : 문서를 저장한 웹사이트
+
+abcd.com/index
+>A B C D : 일반적으로 사용하는 웹사이트
+
+1. 내 OS 환경이 어떤 환경인지
+>> cat /etc/os-release
+
+2. OS 버전이 무슨 버전인지
+3. PPA에 올라간 패키지가 내 환경에서 작동할 수 있는 패키지인지
+apt add-apt-repository ppa:ttyrnppu/tomcat
+
+apt-get install libtomcat8-java
+
+
+
+
+
+그 다음에 해야 하는 것 : 네트워크 관련
+
+* 방화벽?
+> 허용된 ip만 접근할 수 있도록 설정
+-------------------------------------
+* 로드밸런서?
+> 서버를 증설해야 하는데, 
+  ex.
+  네이버 서버실
+~~서버증설방법
+1.스케일업: 더 좋은 컴퓨터로 바꾸기
+2.스케일아웃: 컴퓨터 하나 더 사기
+  ㄴ 문제: 두개를 연결시켜야 함
+  기존 컴퓨터가 하나일 때, 
+  클라이언트(사용자) - 서버
+  만약 업데이트가 필요 > 서버를 끄고 다시 빌드 파일 업로드 후 실행해야 함.
+
+  컴퓨터가 2대임
+  클라이언트(사용자) - <로드밸런서> - 서버
+                                  - 서버
+서버1 서버2가 있으면 둘 중 좀 더 한가한 애로 요청
+
+업데이트 할 때,
+서버1 업데이트 할 때는 서버2는 계속 서비스
+>> CI/CD 개념 (CD로 보면 됨)
+
+인바운드에 ip 123.123.123.123 추가
+아웃바운드에 123.123.123.123 없음
+(= 해당 ip에 요청을 할 수 있으나 응답은 받을 수 없음)
+
+-----------------------------
+* 포트?
+> 프로세스 번호
+--------------------------------
+* 포트포워딩?
+> 웹서버에서 80포트가 받ㄷ고록 주소를 설정해서 보냈는데, 받는사람이 80포트 말고 90포트 쓰려함.
+>80포트 받는 것들을 90포트로 보내~~! == 포트포워딩
+----------------------------------------------
+* ip? > 내 인터넷 주소
+내 컴퓨터위치는 알 수 있음
+
+우리가 쓰는 웹서버는 80 포트를 사용합니다.
+http : 80
+https : 433 (https = http + security)
+> https는 인증서를 받아야 웹사이트를 열 수 있음.
+
+서버 -> 내 컴퓨터로 데이터 전송
+
+구글 크롬(80), 카카오톡(255), 롤(130)
