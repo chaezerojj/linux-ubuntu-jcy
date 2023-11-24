@@ -33,6 +33,7 @@ ubuntu:x:1000:
 (버전이 다를 경우 안될 수도 있음)
 
 ~~~~~~~~~
+
 유저생성 : useradd
 유저변경 : usermod
 유저삭제 : userdel
@@ -89,9 +90,7 @@ apt add-apt-repository ppa:ttyrnppu/tomcat
 apt-get install libtomcat8-java
 
 
-
-
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 그 다음에 해야 하는 것 : 네트워크 관련
 
 * 방화벽?
@@ -141,4 +140,3 @@ https : 433 (https = http + security)
 서버 -> 내 컴퓨터로 데이터 전송
 
 구글 크롬(80), 카카오톡(255), 롤(130)
-
