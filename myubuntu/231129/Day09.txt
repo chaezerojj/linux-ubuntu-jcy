@@ -1,0 +1,108 @@
+231129 day 09
+
+* FTP(File Transfer Protocol)
+  : 프로토콜
+  - 파일 송수신할 때 사용하는 프로토콜
+  - AWS S3 : 파일만 담는 서버
+  - 예전에는 리눅스로 서버를 만들어 FTP로 파일을 저장하고 다운로드하는 방식을 사용
+  - FTP 설정하는 방법
+    1. vsftpd 패키지 설치
+    >> sudo apt-get install vsftpd
+    >> sudo systemctl status vsftpd
+
+    >> vi /etc/vsftpd.conf
+
+    2. ftp 접속
+    >> ftp 10.0.2.15
+
+    3. 포트포워딩
+    >> 포트 21로
+
+    4. 윈도우에서 ftp 작동 테스트
+    >> 명령프롬프트에서 ftp 접속
+    >> 파일 보내고 확인해보기
+
+* 방화벽(ufw)
+
+systemctl status vsftpd
+
+fwd 
+>> 원격파일(Remote) | 로컬 파일 (Local)
+
+vi /etc/vsftpd.conf
+cp /etc/vsftpd.conf /etc/vsftpd-backup.conf (설정파일 백업하기)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ufw (리눅스에서 사용하는 방화벽)
+>> ufw status
+  (방화벽 켜진 상태> ufw rule 내용~~ 나옴)
+    ㄴ 어떤 ip와 포트를 allow/deny 하는지
+
+ufw allow 22
+-> 모든 ip의 22번 포트로 요청하는 것은 방화벽에 막히지 않는다는 뜻(허용)
+
+ufw의 기본 전략
+-> 방화벽을 enable하면, 모든 ip와 포트는 접속 허용을 거부한다
+
+ufw default deny
+-> ufw 기본 전략 접속 거부
+ufw defalt allow
+-> 기본전략 접속 허용
+
+공개된 ip는 로드밸런서만 ㅇㅇ
+
+** ufw 특정 포트 열기
+>> ufw allow 22
+** IP 종류: IPv4 | IPv6
+IPv4>> 약 43억개 IP주소 32비트 숫자주소
+IPv6>> 3.4*10^8개 고유주소 128비트 주소
+
+포트 프로토콜 종류 : udp tcp
+
+TCP(Transmission Control Protocol, 전송 제어 프로토콜)
+- 1. 통신하고 싶은 상대에게 통신하고 싶다는 메시지 전송 (SYN)
+- 2. 상대는 메세지를 받아 응답하고 상대도 통신준비가 되었다고 메시지를 보냄 (SYN-ACK)
+- 3-1. 상대로부터 메시지 받아 데이터 전송 (ACK)
+- 3-2. 통신준비 되었다는 메시지를 받지 못할 경우,
+      상대에게 통신하고 싶다는 메시지를 다시 보냄
+      타임아웃 시간까지 메시지를 받지 못하면 통신 요청 종료.
+- 장점: 데이터가 제대로 전달되었는지 확인 가능
+        (Three Way HandShake)
+- OSI 7 계층 중 전송계층에서 사용되는 프로그램
+
+UDP(User Datagram Protocal, 사용자 데이터그램 프로토콜)
+- 1. 데이터를 주고싶은 상대에게 바로 통신
+- 특징:
+  - 신뢰성 낮음
+  - 손실되는 데이터 발생할 수 있음
+  - 장점: TCP방식에 비해 빠름
+
+* 특정 포트의 특정 프로토콜 접속 허용 설정
+ufw allow 22/tcp
+ufw allow 22/udp
+(deny로 바꾸면 차단 설정)
+> ufw deny 22/
+
+
+* 특정 ip설정
+ufw allow from <IP주소> to any port 22
+
+방화벽의 구조 (인바운드 | 아웃바운드)
+- 인바운드: 들어오는거(요청)
+- 아웃바운드: 나가는거(응답)
+
+로드밸런서 - 서버 - DB서버
+
+* 룰 삭제 
+>> ufw status 확인
+>> ufw status numbered (넘버 확인후 삭제할 번호 체크)
+>> ufw status delete 2
+   > Proceed with operation (y|n)? > y 입력
+   >> Rule deleted
+
+>> 다른 방법 : ufw delete allow 22 (22포트 허용 룰 삭제)
+
+ufw allow http
+>> 80포트를 허용하는 룰 추가
+

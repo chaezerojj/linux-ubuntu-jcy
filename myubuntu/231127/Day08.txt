@@ -1,0 +1,141 @@
+1. 패키지 설치
+
+2. 세팅(/etc/~~/var/html)
+
+3. 프로세스 실행(systemctl~~)
+
+4. 네트워크 설정(포트포워딩)
+
+5. 완료!
+
+
+
+telnet
+
+-> 가장 기본적인 원격접속 시스템
+
+예를 들어 내가 서버 관리자인데 갑자기 서버가 다운되거나 집에서도 서버에 접근할 수 있도록 해주는것
+
+1. 윈도우로 원격접속해보기
+
+2. putty, mobaxterm 같은 원격 접속 프로그램으로 telnet 원격 접속해보기
+
+
+
+ssh-> 암호화된 원격접속시스템
+
+
+
+
+
+서버 - 클라이언트
+
+telnetd - telnet
+
+
+
+소켓?
+
+stream : 계곡
+
+
+
+데몬프로세스 (-> while로 구현되어 있음)
+
+
+
+데몬 프로세스
+
+백그라운드 포그라운드
+
+
+
+포그라운드 프로세스
+사용자와 상호작용하는 프로세스
+
+최소화를 하더라도 눈에 보이는 프로세스를 포그라운드 프로세스
+
+인터넷, 카카오톡, 메모장, 그림판 등 눈에 보이는 프로그램 
+
+
+백그라운드 프로세스 
+프로세스는 사용자와 상호작용하지 않고 시스템에서 실행되는 프로세스
+눈에 보이지 않지만 뒤에서 일을 하고 있는 프로세스를 백그라운드 프로세스
+
+
+백신 프로그램, 그래픽 드라이버, 마이크 드라이버 등 눈에 보이지 않는 프로그램
+
+>> sudo apt-get install telnetd -y
+
+
+
+>> su root (패스워드 입력)
+
+>> mkdir /etc/xinetd.d/  (폴더 생성)
+
+>> ls -l /etc | grep xinetd
+
+>> sudo vi /etc/xinetd.d/telnet (파일 생성)
+
+
+
+파일 안에서
+
+service telnet
+
+{          
+
+           disable = no
+
+flags = REUSE
+
+socket_type = stream
+
+wait = no
+
+user = root
+
+server = /usr/sbin/in.telnetd
+
+log_on_failure = USERID
+
+log_type = SYSLOG daemon info
+
+}
+
+ 이렇게 세팅 하고
+
+esc 키 > :wq!
+
+
+
+>> sudo apt-get install xinetd
+
+>> sudo vi /etc/xinetd.d/telnet
+
+
+
+>> sudo /etc/init.d/zinetd restart
+
+>> sudo systemctl restart xinetd
+
+
+
+
+
+
+
+로컬에서  telnet 들어가기 
+
+>> telnet 0
+
+
+
+포트포워딩 (포트 23으로 )
+
+설정 네트워크 고급에 포트포워딩 > ip 동일하게, 호스트 포트 게스트 포드 23으로 새로 만들기
+
+
+
+
+
