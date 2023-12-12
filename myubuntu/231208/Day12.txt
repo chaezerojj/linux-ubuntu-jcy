@@ -1,0 +1,160 @@
+! 마운트 !
+
+1. 하드디스크 확인
+ sudo fdisk -l
+- 설정에서 가상 하드디스크 추가 생성 후 마운트하기
+
+2. 파티션 생성
+ sudo fdisk /dev/sdb
+ - 창에 아래 순서대로 커맨드 입력
+ - n(새 파티션 추가) > 1 > 엔터 > 엔터 > y > p 
+
+++ 파티션 2개로 나누려면
+    p > 1(파티션 넘버 입력) > + 5G (5G로 나눠서 하나 생성)
+    > n > p > 2(두번째 파티션 넘버 입력) > w(저장 후 나가기)
+
+3. 파티션 포맷 및 UUID 확인
+ sudo mkfs.ext4 /dev/sdb1
+ sudo blkid (UUID 확인 명령어) (uuid 체크하기)
+
+
+sudo mkdir hdb1 hdb2 (파일 2개 생성)
+ls(파일 확인)
+sudo mount /dev/sdb1 mnt/hdb1 (마운트하기)
+sudo mount /dev/sdb2 mnt/hdb2 (마운트하기)
+hdb1 hdb2 들어가서 ls로 확인
+> lost+found 뜨면 마운트 성공
+
+
+
+4. 마운트
+- 리눅스 /디렉터리 밑에 있는 폴더와 연결시켜야 함
+- : 디스크와 마운트하는 디렉터리를 마운트 포인트라고 함
+
+ sudo mkdir -p /bdata
+ sudo nano /etc/fstab
+ 편집 들어가서 맨 아래 입력
+ UUID=<UUID 번호> /bdata ext4 defaults 0 0
+ > 입력 후 저장 ctrl + x -> y 
+
+ sudo mount -a (마운트 확인)
+ df -h (마운트 적용 확인)
+ 
+
+-----------------------------------------
+
+sda - 첫 디스크
+sdb - 두번째 디스크
+sdc - 세번째 디스크
+
+리눅스에서는 모든 것을 파일 취급하고,
+하드디스크로 리눅스에서는 파일로 인식함
+
+1~10000번까지 주소가 잇는 디스크를 파티션으로 나눔
+>> 1~5000 - 파티션1 / 5001~10000 파티션2
+
+? LVG
+- PV : Physical Volume : 물리적 파티션 단위
+- VG : Volume Group
+- LV : Logical Volume : 논리적 파티션 단위
+
+-------------------------------------------
+
+
+PV 2개 파티션을 6개 나누었는데,
+(sdb1 sdb2 sdb3 sdc1 sdc2 sdc3 )
+LV 3개로 사용하고 싶다면
+>> 1. LVM2 패키지 필요
+   2. 디스크 하나 더 추가
+   3. 디스크 2개를 하나의 LV로 묶기
+   4. LV 파일 시스템은 ext3
+   5. /mnt/lvm에 마운트 시키기
+
+sudo umount /mnt/hdb1
+sudo umount /mnt/hdb2 (마운트 풀기)
+cd /mnt/hdb2
+ls >> (마운트 해제 확인)
+
+우분투 종료하고 설정에서 가상 디스크 하나 추가하기(10GB)
+파티션 만들고 마운트하기 ~~!
+
+
+
+디스크 sda sdb sdc 
+파티션 sdb1 sdb2 sdc1 세개의 파티션을 
+lv lvm1 하나로 묶기
+
+>> 1. 원하는 파티션을 pv(물리볼륨)에 등록
+2. VG(볼륨그룹) 생성
+3. VG에 PV 할당
+4. LV 생성
+5. LV에 파일 시스템 생성
+6. 마운트
+
+
+sudo pvscan (등록된 것들까지 확인)
+sudo vgcreate vg1 /dev/sdb1 /dev/sdb2 /dev/sdc1
+sudo vgdisplay vg1
+
+sudo vgchange -a y vg1
+sudo lvcreate -l 248 vg1 mylvm1
+
+cd mnt 에서
+
+sudo mkdir mylvm1
+sudo mount /dev/gv1/mylvm1 /mnt/mylvm1
+
+
+
+~~~~~~~~~
+vgcreate: vg 생성하기
+vgextend: vg에 pv 추가하기
+vgreduce: vg에서 pv 제거하기
+
+DB 서버 구축시 사용
+10000건에 1GB 
+기존 하드디스크 크기가 100GB 1000000
+스케일업/스케일아웃
+
+pv에 등록을 먼저 해야 vg에 할당 가능
+  -> 파일시스템 등록해야 함
+pvcreate : pv 생성
+pvreduce : pv 삭제
+pvscan : pv 상태보기
+
+vg에서 lv 만들기 가능
+  -> 활성화 먼저 한 뒤에 lv 만들 수 있음
+vgcreate : vg 생성
+vgchange : vg 활성화/비활성화
+vgextend : pv 추가하기
+vgreduce : pv 제거하기
+vgremove : vg 삭제하기
+vgdisplay / vgscan :  상태보기
+
+lv vg에서 lv 할당 가능
+  -> 만들고나서 파일시스템 등록
+lvcreate : lv 생성하기
+lvremove : lv 삭제
+lvextend : 용량 수정하기(축소/수정가능)
+lvsdisplay / lvscan : 상태보기
+
+df : 파일시스템 정보보기
+df -h 
+
+0. lvm2 패키지 설치 + 디스크 꽂혀있다는 전제
+1. pv 등록
+2. vg 생성 및 pv 할당
+3. vg 활성화
+4. lv 생성
+--> 이렇게 하는걸 알고 있고 세부 명령어는 찾아서 사용하면 됨
+
+파일시스템장치명/전체용량/사용용량/가용가능용량/현재사용량(%)/마운트포인트
+
+fsck : 파일시스템 검사
+검사해서 문제 발견하면 복구해주는 프로그램
+
+badblock : 배드블록만 검사
+
+dumpe2fs : 백업 슈퍼블록 위치 찾기
+
+dd : 블록 단위로 복사/붙여넣기
