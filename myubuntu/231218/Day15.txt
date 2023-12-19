@@ -1,0 +1,106 @@
+쉘 스크립트 기본
+
+쉘 프롬프트: 한 줄씩 명령 실행
+쉘 스크립트: 여러 줄 명령 실행
+
+< 쉘 스크립트 실습 예제>
+nginx 패키지 설치 스크립트 만들기
+- 조건: nginx가 설치되어 있다면 기존의 nginx를 삭제하고 재설치
+        (if문 사용)
+
+nano nginx-install.sh
+> #!/bin/bash // bash쉘로 돌아감
+
+if [ nginx 패키지가 설치되어 있다면]; then
+    nginx 삭제
+    nginx 재설치
+
+** if [ -n 조건 ]; => 빈 문자열이 아니면 true
+
+#!/bin/bash
+
+if [ -n "sudo apt install nginx" ]; then
+sudo apt-get remove --purge nginx nginx-full nginx-common
+sudo apt install nginx
+else [ -n "sudo apt install nginx" ];
+fi
+
+값 저장하고
+> bash nginx-install.sh
+> nginx -v (nginx 버전 확인)
+
+
+apt list --installed | grep nginx
+
+if [ -n "$(apt list --installed | grep nginx)" ]; then 
+    echo "already installed"
+    sudo apt-get -y remove --purge nginx nginx-full nginx-common
+    sudo apt-get -y install nginx
+else
+    echo "not installed"
+    sudo apt-get -y install nginx
+fi
+
+apt: apt-get과 apt-cache 명령어를 모두 가지고 있다
+     쉘 프롬프트에 최적화 되어있다
+     쉘 스크립트에도 사용가능, but 경고창 뜸
+apt-get: 쉘 스크립트 쉘 프롬프트 둘다 사용 가능
+apt-cache: 쉘 스크립트 쉘 프롬프트 둘다 사용 가능
+
+apt: interactive (상호작용에 초점)
+
+해당 쉘 스크립트 실행할 때 출력되는 문자열들을 
+nginx-install.log 로그 파일로 남기기
+
+if [ -n "$(apt list --installed | grep nginx)" ]; then 
+    echo "already installed"
+    sudo apt-get -y remove --purge nginx nginx-full nginx-common >> nginx-install.log
+    sudo apt-get -y install nginx >> nginx-install.log
+else
+    echo "not installed"
+    sudo apt-get -y install nginx > nginx-install.log
+fi
+
+~~~~~~~~~~~~~~~~~~
+패키지 이름 입력 받아서
+- 조건: 입력받은 패키지가 설치되어 있다면 기존의 패키지를 삭제하고 재설치 (if문 사용)
+
+echo "name?"
+read name
+if [ $name == "nginx" ]; then
+  if [ -n "$(apt list --installed | grep nginx)" ]; then 
+      echo "already installed"
+      sudo apt-get -y remove --purge nginx nginx-full nginx-common
+      sudo apt-get -y install nginx
+  else
+      sudo apt-get -y install nginx > nginx-install.log
+  fi
+else
+  echo "done"
+fi
+
+bash nginx-install.sh
+
+read 옵션들
+-s : 입력할때 화면에 보이지 않음(ex. 패스워드)
+-a : 가변적인 배열 입력받기 (ex. mkdir 1234)
+-p : 메시지와 같은 라인에서 입력받기 (ex. Enter the package name : nginx)
+
+~~~~~~~~~~~~
+쉘 스크립트에서 환경변수 사용하기
+env | grep HOME
+nano env-test.sh
+>>
+#!/bin/bash
+
+echo "$HOME"
+
+
+
+#!/bin/bash
+
+HOME="ENV TEST"
+
+echo "$HOME"
+
+지역변수 표기 시 카멜 표기법 사용 (대문자 사용 X)
