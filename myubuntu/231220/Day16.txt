@@ -1,0 +1,161 @@
+지난시간
+쉘 스크립트 기본
+if [ -n 조건]; then
+else 
+fi
+
+if [ $name == "nginx" ]; then
+  if [ -n "$(apt list --installed | grep nginx)" ]; then 
+      echo "already installed"
+      sudo apt-get -y remove --purge nginx nginx-full nginx-common
+      sudo apt-get -y install nginx
+  else
+      sudo apt-get -y install nginx > nginx-install.log
+  fi
+else
+  echo "done"
+fi
+
+>> echo문 남기면 어디서 오류가 났는지 확인 유용
+
+
+~~~~~~~~~~~~~~~~~~~`
+실습 예제
+>>
+
+프로세스가 실행중인지 확인
+만약 프로세스가 실행중이 아니라면 프로세스 재실행
+
+cron을 사용해서 스크립트를 주기적 실행
+
+*****1분마다 실행
+10 **** 매시간 10분마다
+
+nginx 프로세스가 실행중인지 확인
+(ps -ef, systemctl 등 사용)
+
+만약 apache2 프로세스 실행중이라면 nginx가 실행되지 않음
+(둘다 80포트 사용중이라 포트 충돌로 두개 동시 실행 불가능함)
+
+
+systemctl start nginx
+
+sudo systemctl status nginx
+
+sudo systemctl stop apache2 (포트충돌 방지로 stop)
+
+sudo systemctl status apache2
+
+systemctl status nginx
+
+systemctl status nginx | grep Active
+
+* awk 명령어
+: Java의 Tokenixer와 유사한 기능
+"Linux is System"
+구분자가 띄어쓰기 일 때
+>> ["Linux", "is", "System"]
+Active: active (running)
+["Active:", "active", "(running)"]
+
+systemctl status nginx | grep Active | awk '{print $2}'
+
+systemctl status apache2 | grep Active | awk '{print $2}'
+
+nano nginx-process-check.sh
+
+>> 
+#!/bin/bash
+
+# check nginx process
+process = "$(sudo systemctl status nginx | grep Active | awk '{print $2}')
+if [ process != "active" ]; then
+  echo "nginx is nor active"
+  sudo systemctl start nginx
+else
+  echo "nginx is active"
+fi
+
+sh nginx-process-check.sh
+
+
+sudo systemctl stop nginx
+systemctl status nginx
+
+sh nginx-process-check.sh
+
+-------------------------------
+1. nginx를 설치하는 쉘 스크립트
+  - nginx 설치 유무를 확인해서 설치되어 있으면 삭제 후 재설치
+  - 설치되어 있지 않다면 설치
+  - (추가) 설치 완료 후 프로세스 체크 쉘 스크립트를 crom에 추가하는 과정 추가하기
+2. nginx가 실행중인지 확인하는 쉘 스크립트
+
+>> 
+#!/bin/bash
+
+# reset crontab
+touch crontab_delete
+crontab crontab_delete
+rm crontab_delete
+echo "complete to delete crontab"
+
+# check installed
+if [ -n "$(apt list --installed | grep nginx)" ]; then
+  echo "already installed"
+  sudo apt-get -y remove nginx > nginx-install.log
+  sudo apt-get -y install nginx >> nginx-install.log 
+else
+  echo "not installed"
+  sudo apt-get -y install nginx > nginx-install.log 
+fi
+
+# make crontabe
+touch crontab_new
+echo "*****${HOME}/nginx-process-check.sh" >>crontab_new
+crontab crontab_new
+rm crontab_new
+echo "complete to registrate crontab"
+
+
+sh nginx-install.sh
+
+
+사용자로부터 패키지명을 받아서 설치하는 쉘스크립트
+사용자로부터 패키지명을 받아서 프로세스가 실행중인지 체크
+실행중이 아니라면 실행시키는 쉘 스크립트
+단, 여러개의 패키지명을 받아서 체크
+
+ssh nginx vsftpd
+1. read 배열로 받는 옵션 사용
+  read -a 옵션 사용
+2. for each문 사용
+  for 변수명 in 배열
+  do
+    명령어들
+  dome
+streamAPI
+
+List<String> stringList;
+stringList.stream.map().toList();
+
+Linux
+>> 타입이 없음
+배열과 단일 객체
+package="123"
+
+자바는 타입이 존재함
+int number;
+자바스크립트
+>>  const <변수명> = 123;
+    let <변수명> = "123"
+
+nano read-test.sh
+
+>>
+#!/bin/bash
+
+read -a "Enter the package name: " packageNames
+packages="$(echo $packageNAmes | awk )"
+echo "package name is ${packageNames}"
+echo "${#packages[*]}"
